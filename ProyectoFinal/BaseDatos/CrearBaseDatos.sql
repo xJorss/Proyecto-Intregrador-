@@ -197,6 +197,3 @@ BEGIN
     );
 END;
 GO
-
-
-select *from Clientes
