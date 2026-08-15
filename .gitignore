@@ -1,0 +1,32 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Compilación de .NET
+**/bin/
+**/obj/
+artifacts/
+
+# Pruebas y cobertura
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+
+# Registros y archivos temporales
+*.log
+*.tmp
+*.temp
+
+# Archivos locales del sistema operativo
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Paquetes generados
+*.nupkg
+*.snupkg
+
