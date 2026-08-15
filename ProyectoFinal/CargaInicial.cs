@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 class CargaInicial
 {
+    // Carga los clientes desde el archivo y devuelve una lista.
     public static List<Cliente> CargarClientes()
     {
         try
@@ -16,6 +17,7 @@ class CargaInicial
         }
     }
 
+    // Carga los ramos desde el archivo y devuelve una lista.
     public static List<Ramo> CargarRamos()
     {
         try

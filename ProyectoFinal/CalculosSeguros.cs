@@ -2,6 +2,7 @@ using System;
 
 class CalculosSeguros
 {
+    // Calcula la prima base, cargos adicionales, IVA y prima total.
     public static void CalcularPrima(double Ja_capital, double Ja_tasa,
         ref double Ja_primaBase, ref double Ja_superBancos, ref double Ja_seguroCampesino,
         ref double Ja_derechoEmision, ref double Ja_subtotal, ref double Ja_iva, ref double Ja_total)
@@ -15,6 +16,7 @@ class CalculosSeguros
         Ja_total = Ja_subtotal + Ja_iva;
     }
 
+    // Divide el capital entre retención, contrato y facultativo.
     public static void CalcularReaseguro(double Ja_capital, ref double Ja_retencion,
         ref double Ja_contrato, ref double Ja_facultativo)
     {
@@ -24,6 +26,7 @@ class CalculosSeguros
         Ja_facultativo = Math.Max(0, Ja_excedente - Ja_contrato);
     }
 
+    // Calcula el deducible, el pago neto y el estado del siniestro.
     public static void CalcularSiniestro(double Ja_monto, double Ja_porcentaje,
         double Ja_capitalRemanente, ref double Ja_deducible, ref double Ja_pago,
         ref double Ja_consumido, ref string Ja_estado)

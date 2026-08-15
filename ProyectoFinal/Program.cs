@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 class SistemaSeguros
 {
+    // Listas en memoria utilizadas durante la ejecución del sistema.
     static List<Cliente> Ja_ListaClientes = new List<Cliente>();
     static List<Ramo> Ja_ListaRamos = new List<Ramo>();
     static List<Poliza> Ja_ListaPolizas = new List<Poliza>();
@@ -11,6 +12,7 @@ class SistemaSeguros
     static List<AsientoContable> Ja_ListaAsientos = new List<AsientoContable>();
     static List<LogSistema> Ja_ListaLogs = new List<LogSistema>();
 
+    // Repositorios utilizados para trabajar con datos en memoria y SQL Server.
     static PolizaRepositorio Ja_polizaRam = new PolizaRepositorio();
     static SiniestroRepositorio Ja_siniestroRam = new SiniestroRepositorio();
     static ReaseguroRepositorio Ja_reaseguroRam = new ReaseguroRepositorio();
@@ -22,6 +24,7 @@ class SistemaSeguros
     static AsientoContableSqlRepositorio Ja_asientoSql = new AsientoContableSqlRepositorio();
     static LogSistemaSqlRepositorio Ja_logSql = new LogSistemaSqlRepositorio();
 
+    // Inicia el sistema, carga los datos y muestra el menú principal.
     static void Main(string[] args)
     {
         CargarDatos();
@@ -53,6 +56,7 @@ class SistemaSeguros
         }
     }
 
+    // Carga clientes, ramos y registros guardados previamente.
     static void CargarDatos()
     {
         Ja_ListaClientes = CargaInicial.CargarClientes();
@@ -79,6 +83,7 @@ class SistemaSeguros
             MostrarAdvertencia("ADVERTENCIA: La carga inicial está incompleta.");
     }
 
+    // Guarda los clientes y ramos actuales en sus archivos CSV.
     static void GuardarArchivos()
     {
         bool Ja_clientesOk = PersistenciaArchivos.GuardarClientes(Ja_ListaClientes);
@@ -87,6 +92,7 @@ class SistemaSeguros
         else MostrarAdvertencia("ADVERTENCIA: Algunos datos no pudieron guardarse.");
     }
 
+    // Muestra las opciones para trabajar con pólizas.
     static void MenuPolizas()
     {
         bool Ja_volver = false;
@@ -111,6 +117,7 @@ class SistemaSeguros
         }
     }
 
+    // Muestra las opciones para trabajar con siniestros.
     static void MenuSiniestros()
     {
         bool Ja_volver = false;
@@ -135,6 +142,7 @@ class SistemaSeguros
         }
     }
 
+    // Muestra las opciones del módulo de reaseguro.
     static void MenuReaseguro()
     {
         bool Ja_volver = false;
@@ -151,6 +159,7 @@ class SistemaSeguros
         }
     }
 
+    // Lee una opción y comprueba que esté dentro del rango permitido.
     static int LeerOpcionMenu(string Ja_mensaje, int Ja_minimo, int Ja_maximo)
     {
         int Ja_valor;
@@ -163,6 +172,7 @@ class SistemaSeguros
         } while (true);
     }
 
+    // Lee un valor decimal y comprueba sus límites.
     static double LeerDouble(string Ja_mensaje, double Ja_minimo, double Ja_maximo)
     {
         double Ja_valor;
@@ -175,6 +185,7 @@ class SistemaSeguros
         } while (true);
     }
 
+    // Solicita una respuesta de confirmación con S o N.
     static bool Confirmar(string Ja_mensaje)
     {
         while (true)
@@ -216,6 +227,7 @@ class SistemaSeguros
         return true;
     }
 
+    // Solicita la cédula y busca al cliente en la lista.
     static Cliente? SolicitarClientePorCedula(string Ja_mensaje)
     {
         Console.WriteLine(Ja_mensaje);
@@ -263,6 +275,7 @@ class SistemaSeguros
         return Ja_lista;
     }
 
+    // Permite seleccionar una póliza del cliente.
     static Poliza? SeleccionarPoliza(Cliente Ja_cliente, bool Ja_soloActivas)
     {
         List<Poliza> Ja_lista = PolizasDelCliente(Ja_cliente, Ja_soloActivas);
@@ -280,6 +293,11 @@ class SistemaSeguros
         return Ja_lista[Ja_opcion - 1];
     }
 
+    // ===============================
+    // PÓLIZAS
+    // ===============================
+
+    // Emite una póliza después de validar cliente, alertas, ramo y valores.
     static void EmitirPoliza()
     {
         Cliente? Ja_cliente = SolicitarClientePorCedula("Ingrese la cédula del cliente:");
@@ -334,6 +352,7 @@ class SistemaSeguros
         return Ja_mayor;
     }
 
+    // Calcula los valores y devuelve una póliza lista para guardar.
     static Poliza CrearPoliza(int Ja_id, int Ja_cliente, int Ja_ramo, double Ja_capital,
         double Ja_remanente, double Ja_tasa, DateTime Ja_fecha, string Ja_estado)
     {
@@ -345,6 +364,7 @@ class SistemaSeguros
             Ja_base, Ja_super, Ja_campesino, Ja_derecho, Ja_subtotal, Ja_iva, Ja_total, Ja_fecha, Ja_estado);
     }
 
+    // Busca una póliza del cliente y muestra su información.
     static void ConsultarPoliza()
     {
         Cliente? Ja_cliente = SolicitarClientePorCedula("Ingrese la cédula del cliente:");
@@ -353,6 +373,7 @@ class SistemaSeguros
         if (Ja_poliza != null) MostrarPoliza(Ja_poliza);
     }
 
+    // Modifica el capital y la tasa sin perder el capital ya consumido.
     static void ModificarPoliza()
     {
         Cliente? Ja_cliente = SolicitarClientePorCedula("Ingrese la cédula del cliente:");
@@ -388,6 +409,7 @@ class SistemaSeguros
         MostrarPoliza(Ja_nueva);
     }
 
+    // Elimina una póliza solamente si no tiene siniestros.
     static void EliminarPoliza()
     {
         Cliente? Ja_cliente = SolicitarClientePorCedula("Ingrese la cédula del cliente:");
@@ -413,6 +435,7 @@ class SistemaSeguros
         MostrarExito("Póliza eliminada correctamente.");
     }
 
+    // Muestra los datos y valores calculados de una póliza.
     static void MostrarPoliza(Poliza Ja_p)
     {
         Cliente? Ja_cliente = BuscarCliente(Ja_p.IdCliente);
@@ -435,6 +458,11 @@ class SistemaSeguros
         Console.WriteLine("Estado: " + Ja_p.Estado);
     }
 
+    // ===============================
+    // SINIESTROS
+    // ===============================
+
+    // Obtiene los siniestros relacionados con las pólizas del cliente.
     static List<Siniestro> SiniestrosDelCliente(Cliente Ja_cliente)
     {
         List<Siniestro> Ja_lista = new List<Siniestro>();
@@ -446,6 +474,7 @@ class SistemaSeguros
         return Ja_lista;
     }
 
+    // Permite seleccionar un siniestro del cliente.
     static Siniestro? SeleccionarSiniestro(Cliente Ja_cliente)
     {
         List<Siniestro> Ja_lista = SiniestrosDelCliente(Ja_cliente);
@@ -470,6 +499,7 @@ class SistemaSeguros
         }
     }
 
+    // Registra un siniestro y actualiza el capital remanente.
     static void RegistarSiniestro()
     {
         Cliente? Ja_cliente = SolicitarClientePorCedula("Ingrese la cédula del cliente:");
@@ -496,6 +526,7 @@ class SistemaSeguros
         MostrarSiniestro(Ja_siniestro);
     }
 
+    // Calcula los valores del siniestro y define su estado.
     static Siniestro CrearSiniestro(int Ja_id, Poliza Ja_poliza, double Ja_monto,
         double Ja_porcentaje, DateTime Ja_fecha)
     {
@@ -509,6 +540,7 @@ class SistemaSeguros
             Ja_deducible, Ja_pago, Ja_consumido, Ja_fecha, Ja_estado, Ja_observacion);
     }
 
+    // Busca un siniestro del cliente y muestra su información.
     static void ConsultarSiniestro()
     {
         Cliente? Ja_cliente = SolicitarClientePorCedula("Ingrese la cédula del cliente:");
@@ -517,6 +549,7 @@ class SistemaSeguros
         if (Ja_siniestro != null) MostrarSiniestro(Ja_siniestro);
     }
 
+    // Modifica un siniestro y vuelve a calcular el capital disponible.
     static void ModificarSiniestro()
     {
         Cliente? Ja_cliente = SolicitarClientePorCedula("Ingrese la cédula del cliente:");
@@ -550,6 +583,7 @@ class SistemaSeguros
         MostrarSiniestro(Ja_nuevo);
     }
 
+    // Elimina un siniestro y devuelve el capital consumido.
     static void EliminarSiniestro()
     {
         Cliente? Ja_cliente = SolicitarClientePorCedula("Ingrese la cédula del cliente:");
@@ -570,6 +604,7 @@ class SistemaSeguros
         MostrarExito("Siniestro eliminado correctamente.");
     }
 
+    // Muestra el resultado y los valores principales de un siniestro.
     static void MostrarSiniestro(Siniestro Ja_s)
     {
         Console.WriteLine("========================================");
@@ -584,6 +619,11 @@ class SistemaSeguros
         Console.WriteLine("Observación: " + Ja_s.Observacion);
     }
 
+    // ===============================
+    // REASEGURO
+    // ===============================
+
+    // Genera o actualiza el reaseguro asociado a una póliza.
     static void GuardarReaseguro(Poliza Ja_poliza)
     {
         double Ja_retencion = 0, Ja_contrato = 0, Ja_facultativo = 0;
@@ -622,6 +662,7 @@ class SistemaSeguros
         RegistrarLog("Reaseguro", "Informacion", "Reaseguro actualizado para póliza " + Ja_poliza.IdPoliza);
     }
 
+    // Consulta y muestra el reparto de reaseguro de una póliza.
     static void ConsultarReaseguro()
     {
         Cliente? Ja_cliente = SolicitarClientePorCedula("Ingrese la cédula del cliente:");
@@ -644,12 +685,18 @@ class SistemaSeguros
         Console.WriteLine($"Total repartido: ${Ja_reaseguro.TotalRepartido:F2}");
     }
 
+    // ===============================
+    // CONTABILIDAD
+    // ===============================
+
+    // Registra o actualiza el asiento contable de una emisión.
     static void GestionarAsientoEmision(Poliza Ja_poliza)
     {
         GuardarAsiento("Emision", "Cuentas por Cobrar", "Ingresos por primas",
             Ja_poliza.PrimaTotal, Ja_poliza.IdPoliza, -1, "Emisión de póliza " + Ja_poliza.IdPoliza);
     }
 
+    // Registra el pago de un siniestro o anula su asiento anterior.
     static void GestionarAsientoSiniestro(Siniestro Ja_siniestro)
     {
         if (Ja_siniestro.Estado == "Aprobado")
@@ -669,6 +716,7 @@ class SistemaSeguros
         }
     }
 
+    // Registra el valor cedido al reaseguro o anula el asiento anterior.
     static void GestionarAsientoReaseguro(Reaseguro Ja_reaseguro)
     {
         double Ja_valor = Ja_reaseguro.MontoContrato + Ja_reaseguro.MontoFacultativo;
@@ -686,6 +734,7 @@ class SistemaSeguros
         }
     }
 
+    // Guarda un asiento nuevo o actualiza uno existente.
     static void GuardarAsiento(string Ja_tipo, string Ja_debe, string Ja_haber,
         double Ja_valor, int Ja_idPoliza, int Ja_idSiniestro, string Ja_descripcion)
     {
@@ -717,6 +766,7 @@ class SistemaSeguros
         }
     }
 
+    // Muestra las opciones del módulo de contabilidad.
     static void MenuContabilidad()
     {
         bool Ja_volver = false;
@@ -739,6 +789,7 @@ class SistemaSeguros
         }
     }
 
+    // Muestra todos los asientos contables registrados.
     static void ListarAsientos()
     {
         if (Ja_ListaAsientos.Count == 0)
@@ -750,6 +801,7 @@ class SistemaSeguros
             Console.WriteLine($"{Ja_a.IdAsiento} | {Ja_a.Fecha:dd/MM/yyyy HH:mm} | {Ja_a.TipoOperacion} | Debe: {Ja_a.CuentaDebe} | Haber: {Ja_a.CuentaHaber} | ${Ja_a.Valor:F2} | {Ja_a.Estado}");
     }
 
+    // Calcula y muestra los totales del Debe y Haber.
     static void MostrarTotales()
     {
         double Ja_total = 0;
@@ -759,6 +811,7 @@ class SistemaSeguros
         Console.WriteLine($"Total Haber: ${Ja_total:F2}");
     }
 
+    // Suma las primas registradas en los asientos de emisión.
     static void MostrarPrimas()
     {
         double Ja_total = 0;
@@ -767,6 +820,11 @@ class SistemaSeguros
         Console.WriteLine($"Total de primas recaudadas: ${Ja_total:F2}");
     }
 
+    // ===============================
+    // LOGS
+    // ===============================
+
+    // Muestra las opciones para consultar los logs.
     static void MenuLogs()
     {
         bool Ja_volver = false;
@@ -783,6 +841,7 @@ class SistemaSeguros
         }
     }
 
+    // Registra un log sencillo en SQL, memoria y archivo.
     static void RegistrarLog(string Ja_modulo, string Ja_tipo, string Ja_mensaje)
     {
         int Ja_id = Ja_logSql.ObtenerSiguienteId();
@@ -791,6 +850,7 @@ class SistemaSeguros
         PersistenciaArchivos.GuardarLogAuditoria(Ja_log);
     }
 
+    // Muestra todos los logs registrados.
     static void ConsultarLogs()
     {
         if (Ja_ListaLogs.Count == 0)

@@ -1,5 +1,6 @@
 using System;
 
+// Guarda la información básica de un cliente.
 class Cliente
 {
     private int Ja_idCliente;
@@ -30,6 +31,7 @@ class Cliente
     }
 }
 
+// Representa un tipo de seguro disponible en el sistema.
 class Ramo
 {
     private int Ja_idRamo;
@@ -52,6 +54,7 @@ class Ramo
     }
 }
 
+// Representa una póliza con sus valores principales.
 class Poliza
 {
     private int Ja_idPoliza, Ja_idCliente, Ja_idRamo;
@@ -65,6 +68,7 @@ class Poliza
     public int IdCliente { get { return Ja_idCliente; } set { if (value >= 0) Ja_idCliente = value; } }
     public int IdRamo { get { return Ja_idRamo; } set { if (value >= 0) Ja_idRamo = value; } }
     public double CapitalAsegurado { get { return Ja_capitalAsegurado; } set { if (value > 0) Ja_capitalAsegurado = value; } }
+    // Evita que el capital remanente sea negativo o mayor al capital asegurado.
     public double CapitalRemanente
     {
         get { return Ja_capitalRemanente; }
@@ -108,6 +112,7 @@ class Poliza
     }
 }
 
+// Guarda los datos y el resultado de un siniestro.
 class Siniestro
 {
     private int Ja_idSiniestro, Ja_idPoliza;
@@ -145,6 +150,7 @@ class Siniestro
     }
 }
 
+// Guarda el reparto del capital entre los tipos de reaseguro.
 class Reaseguro
 {
     private int Ja_idReaseguro, Ja_idPoliza;
@@ -184,6 +190,7 @@ class Reaseguro
     }
 }
 
+// Representa un movimiento contable del sistema.
 class AsientoContable
 {
     private int Ja_idAsiento, Ja_idPoliza = -1, Ja_idSiniestro = -1;
@@ -221,6 +228,7 @@ class AsientoContable
     }
 }
 
+// Guarda un registro sencillo de las acciones del sistema.
 class LogSistema
 {
     private int Ja_idLog;

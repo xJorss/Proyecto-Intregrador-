@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using Microsoft.Data.SqlClient;
 
+// Define las operaciones básicas de los repositorios en memoria.
 interface IRepositorioGenerico<T>
 {
     bool Agregar(List<T> Ja_lista, T Ja_entidad);
@@ -12,10 +13,12 @@ interface IRepositorioGenerico<T>
     List<T> ObtenerTodos(List<T> Ja_lista);
 }
 
+// Contiene las operaciones comunes para trabajar con listas en memoria.
 abstract class RepositorioMemoria<T> : IRepositorioGenerico<T> where T : class
 {
     protected abstract int ObtenerId(T Ja_entidad);
 
+    // Agrega un objeto si no existe otro con el mismo ID.
     public bool Agregar(List<T> Ja_lista, T Ja_entidad)
     {
         if (Ja_entidad == null || BuscarPorId(Ja_lista, ObtenerId(Ja_entidad)) != null) return false;
@@ -23,6 +26,7 @@ abstract class RepositorioMemoria<T> : IRepositorioGenerico<T> where T : class
         return true;
     }
 
+    // Busca un objeto en la lista usando su ID.
     public T? BuscarPorId(List<T> Ja_lista, int Ja_id)
     {
         foreach (T Ja_entidad in Ja_lista)
@@ -30,6 +34,7 @@ abstract class RepositorioMemoria<T> : IRepositorioGenerico<T> where T : class
         return null;
     }
 
+    // Reemplaza un objeto existente dentro de la lista.
     public bool Modificar(List<T> Ja_lista, T Ja_entidad)
     {
         for (int Ja_i = 0; Ja_i < Ja_lista.Count; Ja_i++)
@@ -43,6 +48,7 @@ abstract class RepositorioMemoria<T> : IRepositorioGenerico<T> where T : class
         return false;
     }
 
+    // Elimina un objeto de la lista usando su ID.
     public bool Eliminar(List<T> Ja_lista, int Ja_id)
     {
         T? Ja_entidad = BuscarPorId(Ja_lista, Ja_id);
@@ -52,16 +58,19 @@ abstract class RepositorioMemoria<T> : IRepositorioGenerico<T> where T : class
     public List<T> ObtenerTodos(List<T> Ja_lista) { return new List<T>(Ja_lista); }
 }
 
+// Permite trabajar con las pólizas guardadas en memoria.
 class PolizaRepositorio : RepositorioMemoria<Poliza>
 {
     protected override int ObtenerId(Poliza Ja_entidad) { return Ja_entidad.IdPoliza; }
 }
 
+// Permite trabajar con los siniestros guardados en memoria.
 class SiniestroRepositorio : RepositorioMemoria<Siniestro>
 {
     protected override int ObtenerId(Siniestro Ja_entidad) { return Ja_entidad.IdSiniestro; }
 }
 
+// Permite trabajar con los reaseguros guardados en memoria.
 class ReaseguroRepositorio : RepositorioMemoria<Reaseguro>
 {
     protected override int ObtenerId(Reaseguro Ja_entidad) { return Ja_entidad.IdReaseguro; }
@@ -74,18 +83,22 @@ class ReaseguroRepositorio : RepositorioMemoria<Reaseguro>
     }
 }
 
+// Permite trabajar con los asientos contables guardados en memoria.
 class AsientoContableRepositorio : RepositorioMemoria<AsientoContable>
 {
     protected override int ObtenerId(AsientoContable Ja_entidad) { return Ja_entidad.IdAsiento; }
 }
 
+// Permite trabajar con los logs guardados en memoria.
 class LogSistemaRepositorio : RepositorioMemoria<LogSistema>
 {
     protected override int ObtenerId(LogSistema Ja_entidad) { return Ja_entidad.IdLog; }
 }
 
+// Reúne las operaciones comunes para trabajar con SQL Server.
 static class SqlUtilidad
 {
+    // Crea un parámetro con su nombre, tipo y valor.
     public static SqlParameter Parametro(string Ja_nombre, SqlDbType Ja_tipo, object Ja_valor, int Ja_tamano = 0)
     {
         SqlParameter Ja_parametro = Ja_tamano > 0
@@ -95,6 +108,7 @@ static class SqlUtilidad
         return Ja_parametro;
     }
 
+    // Ejecuta una consulta y devuelve los resultados en una tabla.
     public static DataTable Consultar(string Ja_sql, List<SqlParameter>? Ja_parametros = null)
     {
         DataTable Ja_tabla = new DataTable();
@@ -115,6 +129,7 @@ static class SqlUtilidad
         return Ja_tabla;
     }
 
+    // Ejecuta una instrucción INSERT, UPDATE o DELETE.
     public static int Ejecutar(string Ja_sql, List<SqlParameter>? Ja_parametros = null)
     {
         try
@@ -134,6 +149,7 @@ static class SqlUtilidad
         }
     }
 
+    // Ejecuta una consulta que devuelve un solo valor.
     public static object? Escalar(string Ja_sql, List<SqlParameter>? Ja_parametros = null)
     {
         try
@@ -153,6 +169,7 @@ static class SqlUtilidad
         }
     }
 
+    // Obtiene el siguiente ID disponible de una tabla.
     public static int SiguienteId(string Ja_tabla, string Ja_columna)
     {
         object? Ja_resultado = Escalar($"SELECT ISNULL(MAX({Ja_columna}), 0) + 1 FROM {Ja_tabla}");
@@ -173,8 +190,10 @@ static class SqlUtilidad
     }
 }
 
+// Guarda la información de los clientes en SQL Server.
 class ClienteSqlRepositorio
 {
+    // Guarda o actualiza todos los clientes en SQL Server.
     public bool GuardarClientes(List<Cliente> Ja_clientes)
     {
         string Ja_sql =
@@ -197,8 +216,10 @@ class ClienteSqlRepositorio
     }
 }
 
+// Guarda la información de los ramos en SQL Server.
 class RamoSqlRepositorio
 {
+    // Guarda o actualiza todos los ramos en SQL Server.
     public bool GuardarRamos(List<Ramo> Ja_ramos)
     {
         string Ja_sql =
@@ -221,10 +242,12 @@ class RamoSqlRepositorio
     }
 }
 
+// Permite consultar y guardar pólizas en SQL Server.
 class PolizaSqlRepositorio
 {
     private const string Ja_columnas = "IdPoliza,IdCliente,IdRamo,CapitalAsegurado,CapitalRemanente,TasaRiesgo,PrimaBase,SuperBancos,SeguroCampesino,DerechoEmision,Subtotal,IVA,PrimaTotal,FechaEmision,Estado";
 
+    // Obtiene todas las pólizas guardadas en la base de datos.
     public List<Poliza> ObtenerTodas()
     {
         DataTable Ja_tabla = SqlUtilidad.Consultar("SELECT " + Ja_columnas + " FROM Polizas ORDER BY IdPoliza");
@@ -242,6 +265,7 @@ class PolizaSqlRepositorio
 
     public int ObtenerSiguienteId() { return SqlUtilidad.SiguienteId("Polizas", "IdPoliza"); }
 
+    // Registra una nueva póliza en la base de datos.
     public bool Insertar(Poliza Ja_poliza)
     {
         string Ja_sql = "INSERT INTO Polizas (" + Ja_columnas + ") VALUES " +
@@ -249,6 +273,7 @@ class PolizaSqlRepositorio
         return SqlUtilidad.Ejecutar(Ja_sql, Parametros(Ja_poliza)) == 1;
     }
 
+    // Actualiza los datos de una póliza existente.
     public bool Actualizar(Poliza Ja_poliza)
     {
         string Ja_sql = "UPDATE Polizas SET IdCliente=@IdCliente,IdRamo=@IdRamo,CapitalAsegurado=@CapitalAsegurado," +
@@ -265,6 +290,7 @@ class PolizaSqlRepositorio
         return Ja_resultado != null && Convert.ToInt32(Ja_resultado) > 0;
     }
 
+    // Elimina una póliza y sus registros relacionados si no tiene siniestros.
     public bool EliminarCompletaSinSiniestros(int Ja_idPoliza)
     {
         try
@@ -341,10 +367,12 @@ class PolizaSqlRepositorio
     }
 }
 
+// Permite consultar y guardar siniestros en SQL Server.
 class SiniestroSqlRepositorio
 {
     private const string Ja_columnas = "IdSiniestro,IdPoliza,MontoReclamo,PorcentajeDeducible,ValorDeducible,PagoNeto,CapitalConsumido,FechaSiniestro,Estado,Observacion";
 
+    // Obtiene todos los siniestros guardados en la base de datos.
     public List<Siniestro> ObtenerTodos()
     {
         DataTable Ja_tabla = SqlUtilidad.Consultar("SELECT " + Ja_columnas + " FROM Siniestros ORDER BY IdSiniestro");
@@ -359,11 +387,13 @@ class SiniestroSqlRepositorio
 
     public int ObtenerSiguienteId() { return SqlUtilidad.SiguienteId("Siniestros", "IdSiniestro"); }
 
+    // Registra un siniestro y actualiza el capital de la póliza.
     public bool RegistrarConActualizacionCapital(Siniestro Ja_siniestro, double Ja_nuevoCapitalRemanente)
     {
         return GuardarConCapital(Ja_siniestro, Ja_nuevoCapitalRemanente, true);
     }
 
+    // Modifica un siniestro y guarda el nuevo capital remanente.
     public bool ActualizarConCapital(Siniestro Ja_siniestro, double Ja_nuevoCapitalRemanente)
     {
         return GuardarConCapital(Ja_siniestro, Ja_nuevoCapitalRemanente, false);
@@ -397,6 +427,7 @@ class SiniestroSqlRepositorio
         }
     }
 
+    // Elimina un siniestro y devuelve el capital que había consumido.
     public bool EliminarConDevolucionCapital(int Ja_idSiniestro)
     {
         try
@@ -506,10 +537,12 @@ class SiniestroSqlRepositorio
     }
 }
 
+// Permite consultar y guardar reaseguros en SQL Server.
 class ReaseguroSqlRepositorio
 {
     private const string Ja_columnas = "IdReaseguro,IdPoliza,MontoRetencion,MontoContrato,MontoFacultativo,TotalRepartido,IndiceRetencion,IndiceContrato,IndiceFacultativo,FechaGeneracion,Generado";
 
+    // Obtiene todos los reaseguros guardados en la base de datos.
     public List<Reaseguro> ObtenerTodos()
     {
         DataTable Ja_tabla = SqlUtilidad.Consultar("SELECT " + Ja_columnas + " FROM Reaseguros ORDER BY IdReaseguro");
@@ -518,6 +551,7 @@ class ReaseguroSqlRepositorio
         return Ja_lista;
     }
 
+    // Busca el reaseguro asociado a una póliza.
     public Reaseguro? BuscarPorPoliza(int Ja_idPoliza)
     {
         List<SqlParameter> Ja_p = new List<SqlParameter> { SqlUtilidad.Parametro("@IdPoliza", SqlDbType.Int, Ja_idPoliza) };
@@ -526,11 +560,13 @@ class ReaseguroSqlRepositorio
     }
 
     public int ObtenerSiguienteId() { return SqlUtilidad.SiguienteId("Reaseguros", "IdReaseguro"); }
+    // Registra un nuevo reaseguro en la base de datos.
     public bool Insertar(Reaseguro Ja_r)
     {
         string Ja_sql = "INSERT INTO Reaseguros (" + Ja_columnas + ") VALUES (@IdReaseguro,@IdPoliza,@MontoRetencion,@MontoContrato,@MontoFacultativo,@TotalRepartido,@IndiceRetencion,@IndiceContrato,@IndiceFacultativo,@FechaGeneracion,@Generado)";
         return SqlUtilidad.Ejecutar(Ja_sql, Parametros(Ja_r)) == 1;
     }
+    // Actualiza el reaseguro de una póliza.
     public bool Actualizar(Reaseguro Ja_r)
     {
         string Ja_sql = "UPDATE Reaseguros SET IdPoliza=@IdPoliza,MontoRetencion=@MontoRetencion,MontoContrato=@MontoContrato,MontoFacultativo=@MontoFacultativo,TotalRepartido=@TotalRepartido,IndiceRetencion=@IndiceRetencion,IndiceContrato=@IndiceContrato,IndiceFacultativo=@IndiceFacultativo,FechaGeneracion=@FechaGeneracion,Generado=@Generado WHERE IdReaseguro=@IdReaseguro";
@@ -564,10 +600,12 @@ class ReaseguroSqlRepositorio
     }
 }
 
+// Permite consultar y guardar asientos contables en SQL Server.
 class AsientoContableSqlRepositorio
 {
     private const string Ja_columnas = "IdAsiento,TipoOperacion,CuentaDebe,CuentaHaber,Valor,Fecha,IdPoliza,IdSiniestro,Descripcion,Estado";
 
+    // Obtiene todos los asientos contables guardados.
     public List<AsientoContable> ObtenerTodos()
     {
         DataTable Ja_tabla = SqlUtilidad.Consultar("SELECT " + Ja_columnas + " FROM AsientosContables ORDER BY IdAsiento");
@@ -582,6 +620,7 @@ class AsientoContableSqlRepositorio
         return Ja_lista.Count == 0 ? null : Ja_lista[0];
     }
 
+    // Busca un asiento por póliza y tipo de operación.
     public AsientoContable? BuscarPorPoliza(int Ja_idPoliza, string Ja_tipo)
     {
         List<SqlParameter> Ja_p = new List<SqlParameter>
@@ -600,11 +639,13 @@ class AsientoContableSqlRepositorio
     }
 
     public int ObtenerSiguienteId() { return SqlUtilidad.SiguienteId("AsientosContables", "IdAsiento"); }
+    // Registra un nuevo asiento contable.
     public bool Insertar(AsientoContable Ja_a)
     {
         string Ja_sql = "INSERT INTO AsientosContables (" + Ja_columnas + ") VALUES (@IdAsiento,@TipoOperacion,@CuentaDebe,@CuentaHaber,@Valor,@Fecha,@IdPoliza,@IdSiniestro,@Descripcion,@Estado)";
         return SqlUtilidad.Ejecutar(Ja_sql, Parametros(Ja_a)) == 1;
     }
+    // Actualiza un asiento contable existente.
     public bool Actualizar(AsientoContable Ja_a)
     {
         string Ja_sql = "UPDATE AsientosContables SET TipoOperacion=@TipoOperacion,CuentaDebe=@CuentaDebe,CuentaHaber=@CuentaHaber,Valor=@Valor,Fecha=@Fecha,IdPoliza=@IdPoliza,IdSiniestro=@IdSiniestro,Descripcion=@Descripcion,Estado=@Estado WHERE IdAsiento=@IdAsiento";
@@ -644,8 +685,10 @@ class AsientoContableSqlRepositorio
     }
 }
 
+// Permite consultar y guardar logs en SQL Server.
 class LogSistemaSqlRepositorio
 {
+    // Obtiene todos los logs guardados en la base de datos.
     public List<LogSistema> ObtenerTodos()
     {
         DataTable Ja_tabla = SqlUtilidad.Consultar("SELECT IdLog,Fecha,Modulo,Tipo,Mensaje,Usuario FROM Logs ORDER BY IdLog");
@@ -659,6 +702,7 @@ class LogSistemaSqlRepositorio
 
     public int ObtenerSiguienteId() { return SqlUtilidad.SiguienteId("Logs", "IdLog"); }
 
+    // Guarda un log del sistema en SQL Server.
     public bool Insertar(LogSistema Ja_log)
     {
         string Ja_sql = "INSERT INTO Logs (IdLog,Fecha,Modulo,Tipo,Mensaje,Usuario) VALUES (@Id,@Fecha,@Modulo,@Tipo,@Mensaje,@Usuario)";

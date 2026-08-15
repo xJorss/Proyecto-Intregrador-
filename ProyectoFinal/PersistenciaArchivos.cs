@@ -4,11 +4,13 @@ using System.IO;
 
 class PersistenciaArchivos
 {
+    // Obtiene la ruta de la carpeta Datos sin usar una ruta fija del computador.
     private static string Ruta(string Ja_archivo)
     {
         return Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "Datos", Ja_archivo));
     }
 
+    // Lee clientes.csv y convierte cada línea en un objeto Cliente.
     public static List<Cliente> LeerClientes()
     {
         List<Cliente> Ja_clientes = new List<Cliente>();
@@ -47,6 +49,7 @@ class PersistenciaArchivos
         }
     }
 
+    // Lee ramos.csv y convierte cada línea en un objeto Ramo.
     public static List<Ramo> LeerRamos()
     {
         List<Ramo> Ja_ramos = new List<Ramo>();
@@ -79,6 +82,7 @@ class PersistenciaArchivos
         }
     }
 
+    // Guarda la lista de clientes nuevamente en formato CSV.
     public static bool GuardarClientes(List<Cliente> Ja_clientes)
     {
         try
@@ -100,6 +104,7 @@ class PersistenciaArchivos
         }
     }
 
+    // Guarda la lista de ramos nuevamente en formato CSV.
     public static bool GuardarRamos(List<Ramo> Ja_ramos)
     {
         try
@@ -118,6 +123,7 @@ class PersistenciaArchivos
         }
     }
 
+    // Agrega un registro al archivo de auditoría.
     public static bool GuardarLogAuditoria(LogSistema Ja_log)
     {
         try

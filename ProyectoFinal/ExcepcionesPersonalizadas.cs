@@ -1,5 +1,6 @@
 using System;
 
+// Se usa cuando ocurre un problema al leer o guardar archivos.
 class ArchivoDatosException : Exception
 {
     public ArchivoDatosException(string Ja_mensaje)
@@ -13,6 +14,7 @@ class ArchivoDatosException : Exception
     }
 }
 
+// Se usa cuando los datos de un cliente no son válidos.
 class ClienteInvalidoException : Exception
 {
     public ClienteInvalidoException(string Ja_mensaje)
@@ -22,6 +24,7 @@ class ClienteInvalidoException : Exception
 
 }
 
+// Se usa cuando los datos de un ramo no son válidos.
 class RamoInvalidoException : Exception
 {
     public RamoInvalidoException(string Ja_mensaje)
